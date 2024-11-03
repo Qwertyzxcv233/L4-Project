@@ -14,7 +14,7 @@ public class Bullet {
 
     public Bullet(String texturePath, float startX, float startY, float targetX, float targetY, float speed) {
         if (texture == null) {
-            texture = new Texture("bucket.png"); // 加载材质
+            texture = new Texture("bullet.png");
         }
         this.texture = new Texture(texturePath);
         this.x = startX;

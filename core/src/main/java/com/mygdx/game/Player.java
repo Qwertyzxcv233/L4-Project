@@ -11,6 +11,8 @@ public class Player {
     private int health;
     private int attackPower;
     private Weapon weapon;
+    private boolean isAlive;
+
 
     public Player(String texturePath, float startX, float startY, float speed, int health, int attackPower) {
         this.texture = new Texture(texturePath);
@@ -20,9 +22,11 @@ public class Player {
         this.health = health;
         this.attackPower = attackPower;
         this.weapon = new Gun(1.0f, 20); // 给玩家初始化装备一把手枪
+        this.isAlive = true;
     }
 
     public void update(float delta) {
+        if (!isAlive) return;
         Input(delta);
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
             weapon.attack(x, y, Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY());
@@ -45,7 +49,20 @@ public class Player {
     }
 
     public void render(SpriteBatch batch) {
-        batch.draw(texture, x, y);
+        if (isAlive) {
+            batch.draw(texture, x, y);
+        }
+    }
+
+    public void takeDamage(int damage) {
+        if (!isAlive) return;
+        health -= damage;
+        System.out.println("Player Health: " + health);
+        if (health <= 0) {
+            health = 0;
+            isAlive = false;
+            System.out.println("Player is dead!");
+        }
     }
 
     public void dispose() {
@@ -83,4 +100,9 @@ public class Player {
     public void setY(float y){
         this.y = y;
     }
+    public boolean isAlive() {
+        return isAlive;
+    }
+
+
 }

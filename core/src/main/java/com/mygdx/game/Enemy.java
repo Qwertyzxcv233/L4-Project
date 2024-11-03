@@ -9,6 +9,9 @@ public class Enemy {
     protected float x, y;
     protected float speed;
     protected int health;
+    float attackCooldown = 2.0f;  // 攻击冷却时间，单位：秒
+    private float timeSinceLastAttack = 0f;
+    private int attackDamage = 10;
 
     public Enemy(String texturePath, float startX, float startY, float speed, int health) {
         this.texture = new Texture(texturePath);
@@ -19,6 +22,7 @@ public class Enemy {
     }
 
     public void update(float delta, float playerX, float playerY) {
+        timeSinceLastAttack += delta;
         moveTowardsPlayer(playerX, playerY, delta);
     }
 
@@ -54,5 +58,20 @@ public class Enemy {
 
     public boolean isDead() {
         return health <= 0;
+    }
+
+    public boolean canAttackPlayer(Player player) {
+        float distance = (float) Math.sqrt((player.getX() - x) * (player.getX() - x) + (player.getY() - y) * (player.getY() - y));
+        return distance < 50f; // 攻击范围内，假设攻击距离为 50 像素
+    }
+
+    public void attackPlayer(Player player) {
+        if (timeSinceLastAttack >= attackCooldown && canAttackPlayer(player)) {
+            player.takeDamage(attackDamage);
+            timeSinceLastAttack = 0f;  // 重置冷却时间
+        }
+    }
+    public int getAttackPower() {
+        return attackDamage;
     }
 }
