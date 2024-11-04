@@ -54,11 +54,20 @@ public class GDXGame extends ApplicationAdapter {
             // 碰撞检测
             for (Bullet bullet : bullets) {
                 if (bullet.isActive()) {
-                    for (Enemy enemy : enemies) {
-                        if (bullet.getBoundingBox().overlaps(enemy.getBoundingBox())) {
-                            enemy.takeDamage(player.getAttackPower());
+                    if (bullet.isEnemyBullet()) {
+                        // 如果是敌人发射的子弹，则检查是否击中玩家
+                        if (bullet.getBoundingBox().overlaps(player.getBoundingBox())) {
+                            player.takeDamage(bullet.getDamage());
                             bullet.deactivate();
-                            break;
+                        }
+                    } else {
+                        // 如果是玩家发射的子弹，则检查是否击中敌人
+                        for (Enemy enemy : enemies) {
+                            if (bullet.getBoundingBox().overlaps(enemy.getBoundingBox())) {
+                                enemy.takeDamage(bullet.getDamage());
+                                bullet.deactivate();
+                                break;
+                            }
                         }
                     }
                 }

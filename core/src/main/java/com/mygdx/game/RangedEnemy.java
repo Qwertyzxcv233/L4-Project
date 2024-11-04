@@ -32,7 +32,7 @@ public class RangedEnemy extends Enemy {
     private void fireBullet(float targetX, float targetY) {
         // 创建一个新子弹对象
         System.out.println("Monster Fire");
-        Bullet bullet = new Bullet("bullet.png", x, y, targetX, targetY, 500f);
+        Bullet bullet = new Bullet("bullet.png", x, y, targetX, targetY, 500f,true,10);
         GDXGame.addBullet(bullet); // 将子弹添加到游戏的子弹列表中
     }
 }

@@ -11,8 +11,10 @@ public class Bullet {
     private float speed;
     private float directionX, directionY;
     private boolean isActive;
+    private boolean isEnemyBullet;
+    private int damage;
 
-    public Bullet(String texturePath, float startX, float startY, float targetX, float targetY, float speed) {
+    public Bullet(String texturePath, float startX, float startY, float targetX, float targetY, float speed, boolean isEnemyBullet,int damage) {
         if (texture == null) {
             texture = new Texture("bullet.png");
         }
@@ -21,6 +23,8 @@ public class Bullet {
         this.y = startY;
         this.speed = speed;
         this.isActive = true;
+        this.isEnemyBullet = isEnemyBullet;
+        this.damage = damage;
 
         // 计算方向
         float length = (float) Math.sqrt((targetX - startX) * (targetX - startX) + (targetY - startY) * (targetY - startY));
@@ -42,6 +46,10 @@ public class Bullet {
         }
     }
 
+    public boolean isEnemyBullet() {
+        return isEnemyBullet;
+    }
+
     public void render(SpriteBatch batch) {
         if (isActive) {
             batch.draw(texture, x, y);
@@ -50,6 +58,10 @@ public class Bullet {
 
     public void dispose() {
         texture.dispose();
+    }
+
+    public int getDamage() {
+        return damage;
     }
 
     public boolean isActive() {
