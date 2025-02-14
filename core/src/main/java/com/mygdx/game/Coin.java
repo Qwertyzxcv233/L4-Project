@@ -5,7 +5,7 @@ public class Coin extends Item {
     private int value;
 
     public Coin(float x, float y) {
-        super("coin.png", x, y); // 确保路径正确
+        super("coin.png", x, y);
         this.value = 10;
     }
 

@@ -14,8 +14,9 @@ import com.badlogic.gdx.math.Vector3;
 
 public class Player {
     private Texture texture;
-    private Animation<TextureRegion> walkAnimation;
-    private Animation<TextureRegion> idleAnimation;
+    private Animation<TextureRegion> walkAnima;
+    private Animation<TextureRegion> idleAnima;
+    private Animation<TextureRegion> hurtAnima;
     private float animationTimer = 0f;
 
     private float x, y;
@@ -25,17 +26,16 @@ public class Player {
     private Weapon weapon;
     private boolean isAlive;
     private int coins = 0;
-    private float lastDeltaX = 0;
-    private float lastDeltaY = 0;
+    private float lastX = 0;
+    private float lastY = 0;
 
     private boolean isMoving = false;
     private boolean isFacingRight = true;
     private Sound shootSound;
 
-    private Animation<TextureRegion> hurtAnimation; // 受伤动画
-    private float hurtAnimationTimer = 0f;
+    private float hurtAnimaTimer = 0f;
     private boolean isHurt = false;
-    private float damageFlashTimer = 0f; // 受伤变白时间
+    private float FlashTimer = 0f;
 
 
     private Circle boundingCircle;
@@ -43,12 +43,12 @@ public class Player {
     public Player(float startX, float startY, float speed, int health, int attackPower) {
         this.texture = GameAssetManager.getInstance().get("Player.png", Texture.class);
         TextureRegion[][] frames = TextureRegion.split(this.texture, 32, 32);
-        TextureRegion[] walkFrames = new TextureRegion[6]; // 6帧
+        TextureRegion[] walkFrames = new TextureRegion[6]; // 6frames
         TextureRegion[] idleFrames = new TextureRegion[6];
         TextureRegion[] hurtFrames = new TextureRegion[3];
 
         for (int i = 0; i < 6; i++) {
-            walkFrames[i] = frames[4][i]; // 行走动画在精灵图的第5行
+            walkFrames[i] = frames[4][i]; // in line 5
         }
         for (int i = 0; i < 6; i++) {
             idleFrames[i] = frames[1][i];
@@ -57,15 +57,15 @@ public class Player {
             hurtFrames[i] = frames[6][i];
         }
 
-        walkAnimation = new Animation<>(0.2f, walkFrames);
-        idleAnimation = new Animation<>(0.2f, idleFrames);
-        hurtAnimation = new Animation<>(0.2f, hurtFrames);
+        walkAnima = new Animation<>(0.2f, walkFrames);
+        idleAnima = new Animation<>(0.2f, idleFrames);
+        hurtAnima = new Animation<>(0.2f, hurtFrames);
         this.x = startX;
         this.y = startY;
         this.speed = speed;
         this.health = health;
         this.attackPower = attackPower;
-        this.weapon = new Gun(1, 20); // 给玩家初始化装备一把手枪
+        this.weapon = new Gun(1, 20); //give player a gun
         this.isAlive = true;
 
         this.boundingCircle = new Circle(startX + 16, startY + 16, 16);
@@ -75,13 +75,13 @@ public class Player {
     public void update(float delta, OrthographicCamera camera) {
         if (!isAlive) return;
 
-        if (damageFlashTimer > 0) {
-            damageFlashTimer -= delta;
+        if (FlashTimer > 0) {
+            FlashTimer -= delta;
         }
 
         if (isHurt) {
-            hurtAnimationTimer -= delta;
-            if (hurtAnimationTimer <= 0) {
+            hurtAnimaTimer -= delta;
+            if (hurtAnimaTimer <= 0) {
                 isHurt = false;
             }
         }
@@ -99,54 +99,54 @@ public class Player {
     }
 
     private void Input(float delta) {
-        lastDeltaX = 0;
-        lastDeltaY = 0;
+        lastX = 0;
+        lastY = 0;
         isMoving = false;
 
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            lastDeltaY = speed * delta;
-            y += lastDeltaY;
+            lastY = speed * delta;
+            y += lastY;
             isMoving = true;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            lastDeltaY = -speed * delta;
-            y += lastDeltaY;
+            lastY = -speed * delta;
+            y += lastY;
             isMoving = true;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            lastDeltaX = -speed * delta;
-            x += lastDeltaX;
+            lastX = -speed * delta;
+            x += lastX;
             isMoving = true;
             isFacingRight = false;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            lastDeltaX = speed * delta;
-            x += lastDeltaX;
+            lastX = speed * delta;
+            x += lastX;
             isMoving = true;
             isFacingRight = true;
         }
     }
 
     public void preventMovement() {
-        x -= lastDeltaX;
-        y -= lastDeltaY;
-        lastDeltaX = 0;
-        lastDeltaY = 0;
+        x -= lastX;
+        y -= lastY;
+        lastX = 0;
+        lastY = 0;
     }
 
     public void render(SpriteBatch batch) {
-        if (damageFlashTimer > 0) {
+        if (FlashTimer > 0) {
             batch.setColor(Color.WHITE); // 变白
         }
         if (!isAlive) return;
 
         TextureRegion currentFrame;
-        if (isHurt && hurtAnimation != null) {
-            currentFrame = hurtAnimation.getKeyFrame(hurtAnimationTimer, false); // 受伤动画
+        if (isHurt && hurtAnima != null) {
+            currentFrame = hurtAnima.getKeyFrame(hurtAnimaTimer, false); // 受伤动画
         } else if (isMoving) {
-            currentFrame = walkAnimation.getKeyFrame(animationTimer, true);
+            currentFrame = walkAnima.getKeyFrame(animationTimer, true);
         } else {
-            currentFrame = idleAnimation.getKeyFrame(animationTimer, true);
+            currentFrame = idleAnima.getKeyFrame(animationTimer, true);
         }
         if ((isFacingRight && currentFrame.isFlipX()) || (!isFacingRight && !currentFrame.isFlipX())) {
             currentFrame.flip(true, false);
@@ -159,9 +159,9 @@ public class Player {
         if (!isAlive) return;
         health -= damage;
         System.out.println("Player Health: " + health);
-        damageFlashTimer = 0.1f;
+        FlashTimer = 0.1f;
         isHurt = true;
-        hurtAnimationTimer = 0.3f;
+        hurtAnimaTimer = 0.3f;
         if (health <= 0) {
             health = 0;
             isAlive = false;

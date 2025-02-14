@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Intersector;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class GDXGame extends ApplicationAdapter {
     private Collision collision;
@@ -28,8 +27,9 @@ public class GDXGame extends ApplicationAdapter {
 
     @Override
     public void create() {
-        initGameAssets();
         initCameraAndBatch();
+        initGameAssets();
+
         initPlayer();
         initEnemies();
         initUI();
@@ -64,6 +64,7 @@ public class GDXGame extends ApplicationAdapter {
         batch = new SpriteBatch();
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         camera.setToOrtho(false);
+        camera.zoom = 0.3f;
     }
 
     private void initPlayer() {
@@ -117,7 +118,7 @@ public class GDXGame extends ApplicationAdapter {
     }
 
     private void updatePlayer(float delta) {
-        collision.handlePlayerCollision(player);
+        collision.PlayerCollision(player);
         player.update(delta, camera);
         camera.position.set(player.getX() + 16, player.getY() + 16, 0);
         camera.update();
@@ -126,7 +127,7 @@ public class GDXGame extends ApplicationAdapter {
     private void updateEnemies(float delta) {
         for (Enemy enemy : enemies) {
             enemy.update(delta, player.getX(), player.getY());
-            collision.handleEnemyCollision(enemy);
+            collision.EnemyCollision(enemy);
             enemy.attackPlayer(player);
         }
         enemies.removeIf(enemy -> !enemy.isAlive());
@@ -136,7 +137,7 @@ public class GDXGame extends ApplicationAdapter {
         for (Bullet bullet : bullets) {
             if (bullet.isActive()) {
                 bullet.update(delta);
-                collision.handleBulletCollision(bullet,player);
+                collision.BulletCollision(bullet,player);
             }
         }
         bullets.removeIf(bullet -> !bullet.isActive());
@@ -167,7 +168,7 @@ public class GDXGame extends ApplicationAdapter {
     private void renderGame() {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        currentRoom.render(Gdx.graphics.getDeltaTime(), camera);
+        currentRoom.render(camera);
 
         if (!isGameOver) {
             renderPlayer();

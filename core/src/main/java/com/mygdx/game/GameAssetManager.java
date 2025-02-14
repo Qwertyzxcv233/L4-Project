@@ -35,8 +35,6 @@ public class GameAssetManager {
 
         // Load music
         manager.load("bgm.mp3", Music.class);
-
-        // Wait until all assets are loaded
         manager.finishLoading();
     }
 

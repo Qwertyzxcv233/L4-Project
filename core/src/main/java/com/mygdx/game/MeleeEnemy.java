@@ -8,34 +8,34 @@ import java.util.Random;
 
 public class MeleeEnemy extends Enemy {
     private boolean isDashing = false;
-    private boolean isStunned = false;  // 冲刺后原地停顿状态
+    private boolean isStun = false;
     private float dashTimer = 0;
     private float stunTimer = 0;
-    private final float DASH_DURATION = 0.6f;
-    private final float DASH_SPEED_MULTIPLIER = 2.5f;
-    private final float DASH_COOLDOWN = 2.0f;
-    private final float STUN_DURATION = 2.0f;
-    private float dashCooldownTimer = 0;
+    private float dashDur = 0.6f;
+    private float dashAcc = 2.5f;
+    private float dashCD = 2.0f;
+    private float stunDur = 2.0f;
+    private float dashCDTimer = 0;
     private float dashPreDelay = 0;
-    private final float DASH_PRE_DELAY_TIME = 0.1f;
+    private float dashPreDelayTime = 0.1f;
     private Random random = new Random();
     private float strafeTimer = 0;
-    private Animation<TextureRegion> stunAnimation;
-    private Animation<TextureRegion> hurtAnimation;
+    private Animation<TextureRegion> stunAnima;
+    private Animation<TextureRegion> hurtAnima;
     private boolean isHurt = false;
-    private float hurtAnimationTimer = 0f;
-    private final float HURT_ANIMATION_DURATION = 0.4f;
+    private float hurtAnimaTimer = 0f;
+    private float hurtAnimaDur = 0.4f;
 
 
 
     public MeleeEnemy(Texture texture, float startX, float startY, float speed, int health) {
-        super(texture, startX, startY, 50f, health);
+        super(texture, startX, startY, 60f, health);
         initializeAnimation();
     }
 
     private void initializeAnimation() {
         TextureRegion[][] frames = TextureRegion.split(this.texture, 32, 32);
-        TextureRegion[] walkFrames = new TextureRegion[6];//6帧
+        TextureRegion[] walkFrames = new TextureRegion[6];
         TextureRegion[] stunFrames = new TextureRegion[3];
         TextureRegion[] hurtFrames = new TextureRegion[2];
 
@@ -52,49 +52,49 @@ public class MeleeEnemy extends Enemy {
         }
 
 
-        walkAnimation = new Animation<>(0.2f, walkFrames);
-        stunAnimation = new Animation<>(0.2f, stunFrames);
-        hurtAnimation = new Animation<>(0.2f, hurtFrames);
+        walkAnima = new Animation<>(0.2f, walkFrames);
+        stunAnima = new Animation<>(0.2f, stunFrames);
+        hurtAnima = new Animation<>(0.1f, hurtFrames);
 
     }
 
     @Override
     public void update(float deltaTime, float playerX, float playerY) {
         float distance = (float) Math.sqrt((playerX - getX()) * (playerX - getX()) + (playerY - getY()) * (playerY - getY()));
-
-        if (isStunned) {
-            stunTimer -= deltaTime;
-            if (stunTimer <= 0) {
-                isStunned = false;
-            }
-            isMoving = false;
-            animationTimer += deltaTime;
-            super.update(deltaTime, playerX, playerY);
-            return;
-        }
-
         if (isHurt) {
-            hurtAnimationTimer -= deltaTime;
-            if (hurtAnimationTimer <= 0) {
+            hurtAnimaTimer -= deltaTime;
+            if (hurtAnimaTimer <= 0) {
                 isHurt = false;
             }
             return;
         }
+        if (isStun) {
+            stunTimer -= deltaTime;
+            if (stunTimer <= 0) {
+                isStun = false;
+            }
+            isMoving = false;
+            animaTimer += deltaTime;
+            super.update(deltaTime, playerX, playerY);
+            return;
+        }
 
 
-        dashCooldownTimer -= deltaTime;
 
 
-        if (distance < 30 && dashCooldownTimer <= 0 && !isDashing && dashPreDelay <= 0) {
-            dashPreDelay = DASH_PRE_DELAY_TIME;
+        dashCDTimer -= deltaTime;
+
+
+        if (distance < 30 && dashCDTimer <= 0 && !isDashing && dashPreDelay <= 0) {
+            dashPreDelay = dashPreDelayTime;
         }
 
         if (dashPreDelay > 0) {
             dashPreDelay -= deltaTime;
             if (dashPreDelay <= 0) {
                 isDashing = true;
-                dashTimer = DASH_DURATION;
-                dashCooldownTimer = DASH_COOLDOWN;
+                dashTimer = dashDur;
+                dashCDTimer = dashCD;
             }
         }
 
@@ -102,8 +102,8 @@ public class MeleeEnemy extends Enemy {
             dashTimer -= deltaTime;
             if (dashTimer <= 0) {
                 isDashing = false;
-                isStunned = true;
-                stunTimer = STUN_DURATION;
+                isStun = true;
+                stunTimer = stunDur;
                 return;
             }
         }
@@ -118,7 +118,7 @@ public class MeleeEnemy extends Enemy {
             }
         }
 
-        float modifiedSpeed = isDashing ? getSpeed() * DASH_SPEED_MULTIPLIER : getSpeed();
+        float modifiedSpeed = isDashing ? getSpeed() * dashAcc : getSpeed();
         moveTowardsPlayer(playerX, playerY, deltaTime, modifiedSpeed);
         super.update(deltaTime, playerX, playerY);
     }
@@ -139,23 +139,22 @@ public class MeleeEnemy extends Enemy {
     @Override
     public void takeDamage(int damage) {
         super.takeDamage(damage);
-
         isHurt = true;
-        hurtAnimationTimer = HURT_ANIMATION_DURATION;
+        hurtAnimaTimer = hurtAnimaDur;
     }
 
     @Override
     public void render(SpriteBatch batch) {
         TextureRegion currentFrame;
 
-        if (isHurt && hurtAnimation != null) {
-            currentFrame = hurtAnimation.getKeyFrame(hurtAnimationTimer, false);
-        } else if (isStunned && stunAnimation != null) {
-            currentFrame = stunAnimation.getKeyFrame(animationTimer, true);
-        } else if (isMoving && walkAnimation != null) {
-            currentFrame = walkAnimation.getKeyFrame(animationTimer, true);
-        } else if (idleAnimation != null) {
-            currentFrame = idleAnimation.getKeyFrame(animationTimer, true);
+        if (isHurt && hurtAnima != null) {
+            currentFrame = hurtAnima.getKeyFrame(hurtAnimaTimer, false);
+        } else if (isStun && stunAnima != null) {
+            currentFrame = stunAnima.getKeyFrame(animaTimer, true);
+        } else if (isMoving && walkAnima != null) {
+            currentFrame = walkAnima.getKeyFrame(animaTimer, true);
+        } else if (idleAnima != null) {
+            currentFrame = idleAnima.getKeyFrame(animaTimer, true);
         } else {
             batch.draw(texture, getX(), getY());
             return;

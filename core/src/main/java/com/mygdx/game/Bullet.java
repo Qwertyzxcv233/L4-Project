@@ -20,9 +20,9 @@ public class Bullet {
     private static Texture texture = GameAssetManager.getInstance().get("bullet.png", Texture.class);
 
     public Bullet(String texturePath, float startX, float startY, float targetX, float targetY, float speed, boolean isEnemyBullet, int damage) {
-        this.texture = Bullet.texture;
+        this.texture = GameAssetManager.getInstance().get(texturePath, Texture.class);
 
-        // 设置子弹的起始位置
+
         this.x = startX;
         this.y = startY;
         this.startX = startX;
@@ -33,7 +33,7 @@ public class Bullet {
         this.isEnemyBullet = isEnemyBullet;
         this.damage = damage;
 
-        // 计算方向
+
         float length = (float) Math.sqrt((targetX - startX) * (targetX - startX) + (targetY - startY) * (targetY - startY));
         if (length != 0) {
             this.directionX = (targetX - startX) / length;

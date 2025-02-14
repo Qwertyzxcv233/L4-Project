@@ -15,25 +15,25 @@ public class Collision {
     public void setRoom(Room room) {
         this.currentRoom = room;
     }
-    private int collisionFrameCounter = 0;
+    private int collisionFrameCount = 0;
 
 
     public void updateCollisions(List<Bullet> bullets, List<Enemy> enemies, Player player) {
-        handlePlayerCollision(player);
+        PlayerCollision(player);
 
         for (Bullet bullet : bullets) {
             if (bullet.isActive()) {
-                handleBulletCollision(bullet, player);
+                BulletCollision(bullet, player);
             }
         }
 
-        handleBulletEnemyCollision(bullets, enemies);
+        BulletEnemyCollision(bullets, enemies);
 
         for (Enemy enemy : enemies) {
-            handleEnemyCollision(enemy);
+            EnemyCollision(enemy);
         }
 
-        handleEnemyAvoidance(enemies);
+        EnemyAvoidance(enemies);
     }
 
     public boolean isCollidingWithWalls(Circle circle) {
@@ -45,19 +45,19 @@ public class Collision {
         return false;
     }
 
-    public void handlePlayerCollision(Player player) {
+    public void PlayerCollision(Player player) {
         if (isCollidingWithWalls(player.getBoundingCircle())) {
             player.preventMovement();
         }
     }
 
-    public void handleEnemyCollision(Enemy enemy) {
+    public void EnemyCollision(Enemy enemy) {
         if (isCollidingWithWalls(enemy.getBoundingCircle())) {
             enemy.preventMovement();
         }
     }
 
-    public void handleBulletCollision(Bullet bullet, Player player) {
+    public void BulletCollision(Bullet bullet, Player player) {
         if (isCollidingWithWalls(bullet.getBoundingCircle())) {
             bullet.deactivate();
         } else if (bullet.isEnemyBullet() && Intersector.overlaps(bullet.getBoundingCircle(), player.getBoundingCircle())) {
@@ -66,12 +66,12 @@ public class Collision {
         }
     }
 
-    public void handleBulletEnemyCollision(List<Bullet> bullets, List<Enemy> enemies) {
-        collisionFrameCounter++;
-        if (collisionFrameCounter % 3 != 0) return;  // **每3帧检测一次**
+    public void BulletEnemyCollision(List<Bullet> bullets, List<Enemy> enemies) {
+        collisionFrameCount++;
+        if (collisionFrameCount % 2 != 0) return;
 
         for (Bullet bullet : bullets) {
-            if (!bullet.isActive()) continue;
+            if (!bullet.isActive() || bullet.isEnemyBullet()) continue;
 
             for (Enemy enemy : enemies) {
                 if (!enemy.isAlive()) continue;
@@ -84,7 +84,7 @@ public class Collision {
         }
     }
 
-    private void handleEnemyAvoidance(List<Enemy> enemies) {
+    private void EnemyAvoidance(List<Enemy> enemies) {
         for (int i = 0; i < enemies.size(); i++) {
             Enemy e1 = enemies.get(i);
             for (int j = i + 1; j < enemies.size(); j++) {
@@ -110,7 +110,7 @@ public class Collision {
         float distance = (float) Math.sqrt(dx * dx + dy * dy);
 
         if (distance == 0) {
-            distance = 0.01f; // 避免除以零
+            distance = 0.01f;
         }
 
         float overlap = e1.getBoundingCircle().radius + e2.getBoundingCircle().radius - distance;

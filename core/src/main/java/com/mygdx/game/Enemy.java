@@ -15,21 +15,21 @@ public class Enemy {
     private int health;
     private float lastDeltaX = 0;
     private float lastDeltaY = 0;
-    private float attackCooldown = 2.0f; // 攻击冷却时间
-    private float timeSinceLastAttack = 0f;
+    private float attackCD = 2;
+    private float lastAttackTime = 0;
     private int attackDamage = 10;
     private Sound hitSound;
-    private float avoidanceCooldown = 0;
+
 
     protected Texture texture;
-    protected Animation<TextureRegion> walkAnimation;
-    protected Animation<TextureRegion> idleAnimation;
-    protected float animationTimer = 0f;
+    protected Animation<TextureRegion> walkAnima;
+    protected Animation<TextureRegion> idleAnima;
+    protected float animaTimer = 0f;
     protected boolean isMoving = false;
     protected boolean isFacingRight = true;
     private boolean isHurt = false;
-    private float hurtAnimationTimer = 0f;
-    private final float HURT_ANIMATION_DURATION = 0.4f;
+    private float hurtAnimaTimer = 0f;
+    private final float hurtAnimaDur = 0.4f;
 
 
     private Circle boundingCircle;
@@ -55,8 +55,8 @@ public class Enemy {
     }
 
     public void update(float delta, float playerX, float playerY) {
-        timeSinceLastAttack += delta;
-        animationTimer += delta;
+        lastAttackTime += delta;
+        animaTimer += delta;
         moveTowardsPlayer(playerX, playerY, delta);
         boundingCircle.setPosition(x + 16, y + 16);
     }
@@ -94,10 +94,10 @@ public class Enemy {
     public void render(SpriteBatch batch) {
         TextureRegion currentFrame;
 
-        if (isMoving && walkAnimation != null) {
-            currentFrame = walkAnimation.getKeyFrame(animationTimer, true);
-        } else if (idleAnimation != null) {
-            currentFrame = idleAnimation.getKeyFrame(animationTimer, true);
+        if (isMoving && walkAnima != null) {
+            currentFrame = walkAnima.getKeyFrame(animaTimer, true);
+        } else if (idleAnima != null) {
+            currentFrame = idleAnima.getKeyFrame(animaTimer, true);
         } else {
             batch.draw(texture, x, y);
             return;
@@ -123,7 +123,7 @@ public class Enemy {
         health -= damage;
         hitSound.play();
         isHurt = true;
-        hurtAnimationTimer = HURT_ANIMATION_DURATION;
+        hurtAnimaTimer = hurtAnimaDur;
         if (health <= 0) {
             health = 0;
         }
@@ -135,13 +135,13 @@ public class Enemy {
 
     public boolean canAttackPlayer(Player player) {
         Circle playerCircle = player.getBoundingCircle();
-        return Intersector.overlaps(boundingCircle, playerCircle); // 使用圆形碰撞检测
+        return Intersector.overlaps(boundingCircle, playerCircle);
     }
 
     public void attackPlayer(Player player) {
-        if (timeSinceLastAttack >= attackCooldown && canAttackPlayer(player)) {
+        if (lastAttackTime >= attackCD && canAttackPlayer(player)) {
             player.takeDamage(attackDamage);
-            timeSinceLastAttack = 0f; // 重置冷却时间
+            lastAttackTime = 0f;
         }
     }
 
@@ -181,7 +181,7 @@ public class Enemy {
         return texture;
     }
 
-    public float getAttackCooldown() {
-        return attackCooldown;
+    public float getAttackCD() {
+        return attackCD;
     }
 }
