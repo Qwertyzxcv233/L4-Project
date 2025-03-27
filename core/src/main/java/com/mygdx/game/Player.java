@@ -165,6 +165,8 @@ public class Player {
         if (health <= 0) {
             health = 0;
             isAlive = false;
+            Sound deathSound = GameAssetManager.getInstance().get("death.mp3", Sound.class);
+            deathSound.play();
             System.out.println("Player is dead!");
         }
     }

@@ -30,6 +30,7 @@ public class GameAssetManager {
         manager.load("x.png", Texture.class);
         manager.load("shoot.mp3", Sound.class);
         manager.load("hurt.mp3", Sound.class);
+        manager.load("death.mp3", Sound.class);
         manager.load("bgm.mp3", Music.class);
         manager.finishLoading();
     }

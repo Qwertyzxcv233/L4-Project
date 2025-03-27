@@ -39,7 +39,7 @@ public class GDXGame extends ApplicationAdapter {
         initPlayer();
         initEnemies();
         initUI();
-        initMusic();
+//        initMusic();
         loadNewRoom("battleroom1.tmx");
     }
 
@@ -119,9 +119,9 @@ public class GDXGame extends ApplicationAdapter {
         bullets.clear();
         loadNewRoom("battleroom1.tmx");
         isShopOpen = false;
-        if (bgm != null && !bgm.isPlaying()) {
-            bgm.play();
-        }
+//        if (bgm != null && !bgm.isPlaying()) {
+//            bgm.play();
+//        }
         player.reset();
     }
 
@@ -353,7 +353,7 @@ public class GDXGame extends ApplicationAdapter {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
             if (player.getCoins() >= 200) {
-                player.addCoins(-200); // 扣除金币
+                player.addCoins(-200);
                 player.setAttackPower(player.getAttackPower() + 5);
                 showShopMessage("Attack power increased by 5!");
             } else {
