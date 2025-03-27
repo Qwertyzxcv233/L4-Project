@@ -1,8 +1,8 @@
 package com.mygdx.game;
 
 public abstract class Weapon {
-    protected float attackRate;  // 攻击频率
-    protected int damage;        // 伤害
+    protected float attackRate;
+    protected int damage;
 
     public Weapon(float attackRate, int damage) {
         this.attackRate = attackRate;

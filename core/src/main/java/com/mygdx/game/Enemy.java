@@ -17,7 +17,7 @@ public class Enemy {
     private float lastDeltaY = 0;
     private float attackCD = 2;
     private float lastAttackTime = 0;
-    private int attackDamage = 10;
+    private int attackDamage = 20;
     private Sound hitSound;
 
 
@@ -151,6 +151,18 @@ public class Enemy {
 
     public float getX() {
         return x;
+    }
+
+    public int getAttackDamage(){
+        return attackDamage;
+    }
+
+    public void setAttackDamage(int damage) {
+        this.attackDamage = damage;
+        if (this.attackDamage < 5) {
+            this.attackDamage = 5;
+        }
+
     }
 
     public float getY() {

@@ -20,12 +20,14 @@ public class RangedEnemy extends Enemy {
     private float moveDur = 1.5f;
     private float moveTimer = 0f;
     private float targetX, targetY;
+    private int attackDamage;
 
     public RangedEnemy(Texture texture, float startX, float startY, float speed, int health, float attackRange) {
         super(texture, startX, startY, speed, health);
         this.attackRange = attackRange;
         initializeAnimation();
         shootSound = GameAssetManager.getInstance().get("shoot.mp3", Sound.class);
+
     }
 
 
@@ -102,7 +104,7 @@ public class RangedEnemy extends Enemy {
 
     private void fireBullet(float targetX, float targetY) {
         shootSound.play(0.5f);
-        Bullet bullet = new Bullet("bullet.png", getX(), getY(), targetX, targetY, 300f, true, 10);
+        Bullet bullet = new Bullet("bullet.png", getX(), getY(), targetX, targetY, 300f, true, super.getAttackDamage());
         GDXGame.addBullet(bullet);
     }
 

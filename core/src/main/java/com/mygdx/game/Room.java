@@ -15,8 +15,8 @@ import java.util.ArrayList;
 
 public class Room {
     private TiledMap map;
-    private OrthogonalTiledMapRenderer mapRender;
-    private Rectangle exitTop;
+    private OrthogonalTiledMapRenderer render;
+    private Rectangle exit;
     private Texture XTexture;
     private boolean isCleared;
     private ArrayList<Enemy> enemies;
@@ -24,17 +24,19 @@ public class Room {
     private int width;
     private int height;
     private ArrayList<Rectangle> collisionRectangles;
+    private int waveCount;
+    private float waveTimer;
+    private float waveInterval = 3f;
+    private int totalWaves;
 
     GameAssetManager assets = GameAssetManager.getInstance();
 
 
-    private int waveCount;
-    private float waveTimer;
-    private final float WAVE_INTERVAL = 3f;
+
 
     public Room(String mapFile) {
         map = new TmxMapLoader().load(mapFile);
-        mapRender = new OrthogonalTiledMapRenderer(map);
+        render = new OrthogonalTiledMapRenderer(map);
 
         int mapWidth = map.getProperties().get("width", Integer.class);
         int mapHeight = map.getProperties().get("height", Integer.class);
@@ -55,7 +57,7 @@ public class Room {
                 String objectName = object.getName();
 
                 if ("ExitTop".equals(objectName)) {
-                    exitTop = rectObject.getRectangle();
+                    exit = rectObject.getRectangle();
                 }
                 else {
                     collisionRectangles.add(rectObject.getRectangle());
@@ -64,8 +66,9 @@ public class Room {
         }
 
         isCleared = false;
-        waveCount = 5;
-        waveTimer = WAVE_INTERVAL;
+        waveCount = 4;
+        waveTimer = waveInterval;
+        totalWaves = waveCount;
         XTexture = new Texture("x.png");
     }
 
@@ -79,7 +82,7 @@ public class Room {
                 waveTimer -= delta;
                 if (waveTimer <= 0) {
                     waveCount--;
-                    waveTimer = WAVE_INTERVAL;
+                    waveTimer = waveInterval;
                     generateEnemies();
                 }
             }
@@ -90,14 +93,14 @@ public class Room {
 
     public void renderExit(SpriteBatch batch) {
         if (waveCount > 0) {
-            batch.draw(XTexture, exitTop.x, exitTop.y, exitTop.width, exitTop.height);
+            batch.draw(XTexture, exit.x, exit.y, exit.width, exit.height);
         }
     }
 
 
     public void render(OrthographicCamera camera) {
-        mapRender.setView(camera);
-        mapRender.render();
+        render.setView(camera);
+        render.render();
     }
 
     private int getRand(int min, int max) {
@@ -105,13 +108,18 @@ public class Room {
     }
 
     private void generateEnemies() {
-        int baseCount = 3;
+        int baseCount = 5;
         int difficultyMultiplier = 2;
 
         for (int i = 0; i < baseCount + waveCount + difficultyMultiplier; i++) {
             int x = getRand(50, width - 50);
             int y = getRand(50, height - 180);
-            String enemyType = Math.random() > 0.5 ? "ranged" : "melee";
+            String enemyType;
+            if (Math.random() > 0.5){
+                enemyType = "ranged";
+            }else {
+                enemyType = "melee";
+            }
             enemies.add(createEnemy(enemyType, x, y));
         }
     }
@@ -121,12 +129,20 @@ public class Room {
         for (int i = 0; i < getRand(1, 5); i++) {
             int x = getRand(50, width - 50);
             int y = getRand(50, height - 180);
-            String itemType = Math.random() > 0.5 ? "coin" : "heart";
+            String itemType;
+            if (Math.random() > 0.5){
+                itemType = "heart";
+            }else {
+                itemType = "coin";
+            }
             items.add(createItem(itemType, x, y));
         }
 
 
 
+    }
+    public int getCurrentWave() {
+        return totalWaves - waveCount;
     }
 
 
@@ -134,11 +150,13 @@ public class Room {
         return enemies;
     }
 
-    public Rectangle getExitTop() {
-        return exitTop;
+    public Rectangle getExit() {
+        return exit;
     }
 
-
+    public int getTotalWaves() {
+        return totalWaves;
+    }
 
     public boolean isCleared() {
         return isCleared;
@@ -150,7 +168,7 @@ public class Room {
 
     public void dispose() {
         map.dispose();
-        mapRender.dispose();
+        render.dispose();
         for (Enemy enemy : enemies) {
             enemy.dispose();
         }

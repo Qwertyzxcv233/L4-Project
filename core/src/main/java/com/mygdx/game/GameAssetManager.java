@@ -21,7 +21,6 @@ public class GameAssetManager {
     }
 
     public void loadGameAssets() {
-        // Load textures
         manager.load("Player.png", Texture.class);
         manager.load("slime.png", Texture.class);
         manager.load("Skeleton.png", Texture.class);
@@ -29,11 +28,8 @@ public class GameAssetManager {
         manager.load("coin.png", Texture.class);
         manager.load("heart.png", Texture.class);
         manager.load("x.png", Texture.class);
-        // Load sounds
         manager.load("shoot.mp3", Sound.class);
         manager.load("hurt.mp3", Sound.class);
-
-        // Load music
         manager.load("bgm.mp3", Music.class);
         manager.finishLoading();
     }

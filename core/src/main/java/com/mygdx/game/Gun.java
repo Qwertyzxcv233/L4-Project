@@ -8,8 +8,11 @@ public class Gun extends Weapon{
     @Override
     public void attack(float startX, float startY, float targetX, float targetY) {
         System.out.println("Gun fires");
-        Bullet bullet= new Bullet("bullet.png", startX, startY, targetX, targetY, 300f,false,10);
+        Bullet bullet= new Bullet("bullet.png", startX, startY, targetX, targetY, 300f,false,damage);
         GDXGame.addBullet(bullet);
+    }
+    public void setDamage(int damage) {
+        this.damage = damage;
     }
 
 }

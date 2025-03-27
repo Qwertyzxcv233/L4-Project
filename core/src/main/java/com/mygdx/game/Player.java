@@ -65,7 +65,7 @@ public class Player {
         this.speed = speed;
         this.health = health;
         this.attackPower = attackPower;
-        this.weapon = new Gun(1, 20); //give player a gun
+        this.weapon = new Gun(1, attackPower); //give player a gun
         this.isAlive = true;
 
         this.boundingCircle = new Circle(startX + 16, startY + 16, 16);
@@ -136,7 +136,7 @@ public class Player {
 
     public void render(SpriteBatch batch) {
         if (FlashTimer > 0) {
-            batch.setColor(Color.WHITE); // 变白
+            batch.setColor(Color.WHITE);
         }
         if (!isAlive) return;
 
@@ -168,7 +168,26 @@ public class Player {
             System.out.println("Player is dead!");
         }
     }
+    public void reset() {
+        this.health = 100;
+        this.coins = 0;
+        this.x = 50;
+        this.y = 50;
+        this.isAlive = true;
+        this.animationTimer = 0f;
+        this.hurtAnimaTimer = 0f;
+        this.FlashTimer = 0f;
+        this.isHurt = false;
+        this.attackPower = 10;
+        updateWeaponDamage();
 
+        this.boundingCircle.setPosition(x + 16, y + 16);
+    }
+    public void updateWeaponDamage() {
+        if (weapon instanceof Gun) {
+            ((Gun) weapon).setDamage(attackPower);
+        }
+    }
     public void dispose() {
         texture.dispose();
     }
@@ -188,6 +207,7 @@ public class Player {
 
     public void setAttackPower(int attackPower) {
         this.attackPower = attackPower;
+        updateWeaponDamage();
     }
 
     public float getX() {
